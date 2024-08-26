@@ -1,20 +1,20 @@
 import React, { useContext, useState } from "react";
-import { View, Text, Button, StyleSheet } from "react-native";
-import { CameraView, Camera } from "expo-camera";
+import { View, Button, StyleSheet, Text } from "react-native";
+import { Camera, CameraView } from "expo-camera";
 import TokenContext from "../context/TokenProvider";
 
-export default function HomeScreen({ navigation }) {
-  const { setScannedData, ipScanned } = useContext(TokenContext);
+export default function IpConfig({ navigation }) {
+  const { setIpScanned } = useContext(TokenContext);
   const [scanned, setScanned] = useState(false);
   const [cameraActive, setCameraActive] = useState(false);
 
   const handleBarCodeScanned = ({ type, data }) => {
     setScanned(true);
-    setScannedData(data); // Guardar el texto escaneado en el contexto global
+    setIpScanned(data); // Guardar la IP escaneada en el contexto global
     setCameraActive(false);
-    navigation.navigate("Scan"); // Navegar a la siguiente pantalla
+    navigation.navigate("Home"); // Navegar al HomeScreen después de escanear
   };
-  console.log(ipScanned);
+
   return (
     <View style={styles.container}>
       {cameraActive && (
@@ -29,7 +29,7 @@ export default function HomeScreen({ navigation }) {
 
       {!cameraActive && (
         <Button
-          title={"Presiona para escanear un código"}
+          title={"Presiona para escanear la IP"}
           onPress={() => {
             setScanned(false);
             setCameraActive(true);
