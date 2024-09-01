@@ -13,8 +13,8 @@ export default function App() {
   return (
     <TokenProvider>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="IpConfig">
-          <Stack.Screen name="IpConfig" component={IpConfig} />
+        <Stack.Navigator initialRouteName="Home">
+          {/* <Stack.Screen name="IpConfig" component={IpConfig} /> */}
           <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="Scan" component={ScanResultScreen} />
         </Stack.Navigator>

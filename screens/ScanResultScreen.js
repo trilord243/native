@@ -12,6 +12,7 @@ import { Camera, CameraView } from "expo-camera";
 import TokenContext from "../context/TokenProvider";
 
 export default function ScanResultScreen() {
+  const http = "https://secure-island-46662-cd8fbd3886e4.herokuapp.com";
   const { scannedData, ipScanned } = useContext(TokenContext);
 
   const [cameraActive, setCameraActive] = useState(false);
@@ -29,19 +30,17 @@ export default function ScanResultScreen() {
     setCameraActive(false);
 
     try {
-      const response = await axios.post(
-        "http://" + ipScanned + ":3000" + "/consult",
-        {
-          codigo: data, // Usar el código escaneado directamente
-          fileName: scannedData, // Ajusta el nombre del archivo según tu caso
-        }
-      );
+      const response = await axios.post(http + "/consult", {
+        codigo: data, // Usar el código escaneado directamente
+        fileName: scannedData, // Ajusta el nombre del archivo según tu caso
+      });
       console.log(response.data);
       setErrorText("");
 
       setProductInfo(response.data.item);
     } catch (error) {
       setErrorText("Codigo no encontrado 😿😿");
+      console.log(error);
     } finally {
       setLoading(false);
     }
@@ -53,14 +52,11 @@ export default function ScanResultScreen() {
     setLoading(true);
 
     try {
-      const response = await axios.put(
-        "http://" + ipScanned + ":3000" + "/update",
-        {
-          codigo: productInfo.Codigo,
-          fileName: scannedData,
-          cantidad: Number(quantity), // Enviar la cantidad como número
-        }
-      );
+      const response = await axios.put(http + "/update", {
+        codigo: productInfo.Codigo,
+        fileName: scannedData,
+        cantidad: Number(quantity), // Enviar la cantidad como número
+      });
 
       console.log("Producto actualizado:", response.data);
 
