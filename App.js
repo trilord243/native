@@ -5,7 +5,8 @@ import { TokenProvider } from "./context/TokenProvider";
 
 import HomeScreen from "./screens/HomeScreen";
 import ScanResultScreen from "./screens/ScanResultScreen";
-import IpConfig from "./screens/IpConfig"; // Importa la nueva pantalla
+
+import CreateProductScreen from "./screens/CreateProductScreen"; // Importa la nueva pantalla
 
 const Stack = createNativeStackNavigator();
 
@@ -14,8 +15,13 @@ export default function App() {
     <TokenProvider>
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Home">
-          {/* <Stack.Screen name="IpConfig" component={IpConfig} /> */}
+
           <Stack.Screen name="Home" component={HomeScreen} />
+            <Stack.Screen
+                name="CreateProductScreen"
+                component={CreateProductScreen}
+                options={{ title: "Crear Producto" }}
+            />
           <Stack.Screen name="Scan" component={ScanResultScreen} />
         </Stack.Navigator>
       </NavigationContainer>
