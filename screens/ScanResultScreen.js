@@ -4,13 +4,14 @@ import {
   Text,
   Button,
   StyleSheet,
-  ActivityIndicator,
+  ActivityIndicator, // Importar ActivityIndicator
   TextInput,
 } from "react-native";
 import axios from "axios";
 import { CameraView } from "expo-camera";
 import TokenContext from "../context/TokenProvider";
 import { useNavigation } from "@react-navigation/native"; // Usar el hook de navegación
+import { Picker } from '@react-native-picker/picker';
 
 export default function ScanResultScreen() {
 
@@ -22,7 +23,7 @@ export default function ScanResultScreen() {
   const [loading, setLoading] = useState(false);
   const [scanned, setScanned] = useState(false);
   const [quantity, setQuantity] = useState("1");
-  const [categoria, setCategoria] = useState("");
+  const [categoria, setCategoria] = useState("N/A");
   const [seleccion, setSeleccion] = useState("");
   const [errorText, setErrorText] = useState("");
   const [error, setError] = useState(null);
@@ -32,136 +33,162 @@ export default function ScanResultScreen() {
   const handleBarCodeScanned = async ({ type, data }) => {
     console.log(data);
     setScanned(true);
-    setLoading(true);
+    setLoading(true); // Mostrar el loader
     setCameraActive(false);
 
     try {
       const response = await axios.post(http + "/consult", {
-        codigo: data, // Usar el código escaneado directamente
-        fileName: scannedData, // Ajusta el nombre del archivo según tu caso
+        codigo: data,
+        fileName: scannedData,
       });
       console.log(response.data);
       setErrorText("");
 
       setProductInfo(response.data.item);
-      setCategoria(response.data.item.Categoria || ""); // Inicializar categoría
-      setSeleccion(response.data.item.Seleccion || ""); // Inicializar selección
+      setCategoria(response.data.item.Categoria || "N/A");
+      setSeleccion(response.data.item.Seleccion || "");
     } catch (error) {
       setErrorText("Código no encontrado 😿");
       console.log(error);
     } finally {
-      setLoading(false);
+      setLoading(false); // Ocultar el loader
     }
   };
 
   const handleUpdateProduct = async () => {
     if (!productInfo) return;
 
-    setLoading(true);
+    setLoading(true); // Mostrar el loader
 
     try {
-      // Actualizar la cantidad
       const responseQuantity = await axios.put(http + "/update", {
         codigo: productInfo.Codigo,
         fileName: scannedData,
-        cantidad: Number(quantity), // Enviar la cantidad como número
+        cantidad: Number(quantity),
       });
 
-      // Actualizar la categoría
       const responseCategory = await axios.put(http + "/update-category", {
         codigo: productInfo.Codigo,
         fileName: scannedData,
-        categoria, // Enviar categoría
+        categoria,
       });
 
-      // Actualizar la selección
       const responseSelection = await axios.put(http + "/update-selection", {
         codigo: productInfo.Codigo,
         fileName: scannedData,
-        seleccion, // Enviar selección
+        seleccion,
       });
 
       console.log("Producto actualizado:", responseQuantity.data, responseCategory.data, responseSelection.data);
 
-      // Limpiar el producto después de actualizar
+      // Limpiar los campos
       setProductInfo(null);
-      setQuantity("1"); // Restablecer la cantidad a 1
-      setCategoria(""); // Restablecer la categoría
-      setSeleccion(""); // Restablecer la selección
+      setQuantity("1");
+      setCategoria("N/A");
+      setSeleccion("");
     } catch (error) {
       console.error("Error actualizando producto:", error);
     } finally {
-      setLoading(false);
+      setLoading(false); // Ocultar el loader
     }
   };
 
   return (
       <View style={styles.container}>
-        <Text style={styles.text}>{scannedData}</Text>
-        {errorText && (
-            <View>
-              <Text>{errorText}</Text>
-              <Button
-                  title="Crear Producto"
-                  onPress={() => navigation.navigate("CreateProductScreen", { codigo: scannedData })} // Navegar a la pantalla de creación
-              />
-            </View>
-        )}
+        {/* Mostrar el loader mientras loading es true */}
+        {loading ? (
+            <ActivityIndicator size="large" color="#0000ff" /> // Loader visible mientras carga
+        ) : (
+            <>
+              <Text style={styles.text}>{scannedData}</Text>
+              {errorText && (
+                  <View>
+                    <Text>{errorText}</Text>
+                    <Button
+                        title="Crear Producto"
+                        onPress={() => navigation.navigate("CreateProductScreen", { codigo: scannedData })}
+                    />
+                  </View>
+              )}
 
-        {cameraActive && (
-            <CameraView
-                onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
-                barcodeScannerSettings={{
-                  barcodeTypes: ["qr", "pdf417", "ean13", "code39"],
-                }}
-                style={StyleSheet.absoluteFillObject}
-            />
-        )}
-        {!cameraActive && (
-            <Button
-                title={"Presiona para escanear un código"}
-                onPress={() => {
-                  setScanned(false);
-                  setCameraActive(true);
-                }}
-            />
-        )}
+              {cameraActive && (
+                  <CameraView
+                      onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+                      barcodeScannerSettings={{
+                        barcodeTypes: ["qr", "pdf417", "ean13", "code39"],
+                      }}
+                      style={StyleSheet.absoluteFillObject}
+                  />
+              )}
+              {!cameraActive && (
+                  <Button
+                      title={"Presiona para escanear un código"}
+                      onPress={() => {
+                        setScanned(false);
+                        setCameraActive(true);
+                      }}
+                  />
+              )}
 
-        {productInfo && (
-            <View>
-              <Text style={styles.text}>Código: {productInfo.Codigo}</Text>
-              <Text style={styles.text}>
-                Descripción: {productInfo.Descripcion}
-              </Text>
-              <Text style={styles.text}>Existencia: {productInfo.Existencia}</Text>
+              {productInfo && (
+                  <View>
+                    <Text style={styles.text}>Código: {productInfo.Codigo}</Text>
+                    <Text style={styles.text}>Descripción: {productInfo.Descripcion}</Text>
+                    <Text style={styles.text}>Existencia: {productInfo.Existencia}</Text>
 
-              <TextInput
-                  style={styles.input}
-                  placeholder="Cantidad"
-                  keyboardType="numeric"
-                  value={quantity}
-                  onChangeText={setQuantity} // Actualizar la cantidad cuando el usuario escribe
-              />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Cantidad"
+                        keyboardType="numeric"
+                        value={quantity}
+                        onChangeText={setQuantity}
+                    />
 
-              <TextInput
-                  style={styles.input}
-                  placeholder="Categoría"
-                  value={categoria}
-                  onChangeText={setCategoria} // Actualizar la categoría cuando el usuario escribe
-              />
+                    <Picker
+                        selectedValue={categoria}
+                        style={{ height: 50, width: 200 }}
+                        onValueChange={(itemValue) => {
+                          console.log("Selected Value:", itemValue);
+                          setCategoria(itemValue);
+                        }}
+                    >
+                      <Picker.Item label="Keto" value="keto" />
+                      <Picker.Item label="Sin Gluten" value="sin gluten" />
+                      <Picker.Item label="Granel" value="granel" />
+                      <Picker.Item label="Bebidas" value="bebidas" />
+                      <Picker.Item label="Vegano" value="vegano" />
+                      <Picker.Item label="Aceites" value="aceites" />
+                      <Picker.Item label="Café" value="cafe" />
+                      <Picker.Item label="Infusiones y Té" value="infusiones y té" />
+                      <Picker.Item label="Carnes Veganas" value="carnes veganas" />
+                      <Picker.Item label="Tortillas" value="tortillas" />
+                      <Picker.Item label="Chocolates" value="chocolates" />
+                      <Picker.Item label="Endulzantes" value="endulzantes" />
+                      <Picker.Item label="Frutos Secos y Deshidratados" value="frutos secos y deshidratados" />
+                      <Picker.Item label="Pastas y Noodles Sin Gluten" value="pastas y noodles sin gluten" />
+                      <Picker.Item label="Salsas y Conservas" value="salsa y conservas" />
+                      <Picker.Item label="Panadería Saludable" value="panaderia saludable" />
+                      <Picker.Item label="Snacks Saludables" value="snacks saludables" />
+                      <Picker.Item label="N/A" value="N/A" />
+                      <Picker.Item label="" value="" />
+                    </Picker>
 
-              <TextInput
-                  style={styles.input}
-                  placeholder="Selección"
-                  value={seleccion}
-                  onChangeText={setSeleccion} // Actualizar la selección cuando el usuario escribe
-              />
+                    <Picker
+                        selectedValue={seleccion}
+                        style={{height: 50, width: 200}}
+                        onValueChange={(itemValue) => setSeleccion(itemValue)}
+                    >
+                      <Picker.Item label="Tienda" value="tienda" />
+                      <Picker.Item label="Web" value="web" />
+                    </Picker>
 
-              <Button
-                  title="Actualizar producto"
-                  onPress={handleUpdateProduct} // Llamar a la función para actualizar el producto
-              />
-            </View>
+                    <Button
+                        title="Actualizar producto"
+                        onPress={handleUpdateProduct}
+                    />
+                  </View>
+              )}
+            </>
         )}
       </View>
   );
