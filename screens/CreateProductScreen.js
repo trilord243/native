@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { View, Text, Button, TextInput, StyleSheet } from "react-native";
+import { View, Text, Button, TextInput, StyleSheet,  ActivityIndicator } from "react-native";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import TokenContext from "../context/TokenProvider";
@@ -46,76 +46,85 @@ export default function CreateProductScreen({ route }) {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.text}>Código: {codigo}</Text>
 
-            <TextInput
+            {loading && <ActivityIndicator size="large" color="#0000ff" />    }
+
+                <Text style={styles.text}>Código: {codigo}</Text>
+
+                <TextInput
                 style={styles.input}
-                placeholder="Descripción"
-                value={descripcion}
-                onChangeText={setDescripcion}
-            />
+            placeholder="Descripción"
+            value={descripcion}
+            onChangeText={setDescripcion}
+        />
 
-            <TextInput
-                style={styles.input}
-                placeholder="Precio"
-                keyboardType="numeric"
-                value={precio}
-                onChangeText={setPrecio}
-            />
+    <TextInput
+        style={styles.input}
+        placeholder="Precio"
+        keyboardType="numeric"
+        value={precio}
+        onChangeText={setPrecio}
+    />
 
-            <TextInput
-                style={styles.input}
-                placeholder="Existencia"
-                keyboardType="numeric"
-                value={existencia}
-                onChangeText={setExistencia}
-            />
+    <TextInput
+        style={styles.input}
+        placeholder="Existencia"
+        keyboardType="numeric"
+        value={existencia}
+        onChangeText={setExistencia}
+    />
 
-            <TextInput
-                style={styles.input}
-                placeholder="Tipo de Venta"
-                value={tipoVenta}
-                onChangeText={setTipoVenta}
-            />
+    <TextInput
+        style={styles.input}
+        placeholder="Tipo de Venta"
+        value={tipoVenta}
+        onChangeText={setTipoVenta}
+    />
 
-            {/* Picker para la Categoría */}
-            <Picker
-                selectedValue={categoria}
-                style={styles.input}
-                onValueChange={(itemValue) => setCategoria(itemValue)}
-            >
-                <Picker.Item label="Keto" value="keto" />
-                <Picker.Item label="Sin Gluten" value="sin gluten" />
-                <Picker.Item label="Granel" value="granel" />
-                <Picker.Item label="Bebidas" value="bebidas" />
-                <Picker.Item label="Vegano" value="vegano" />
-                <Picker.Item label="Aceites" value="aceites" />
-                <Picker.Item label="Café" value="cafe" />
-                <Picker.Item label="Infusiones y Té" value="infusiones y té" />
-                <Picker.Item label="Carnes Veganas" value="carnes veganas" />
-                <Picker.Item label="Tortillas" value="tortillas" />
-                <Picker.Item label="Chocolates" value="chocolates" />
-                <Picker.Item label="Endulzantes" value="endulzantes" />
-                <Picker.Item label="Frutos Secos y Deshidratados" value="frutos secos y deshidratados" />
-                <Picker.Item label="Pastas y Noodles Sin Gluten" value="pastas y noodles sin gluten" />
-                <Picker.Item label="Salsas y Conservas" value="salsa y conservas" />
-                <Picker.Item label="Panadería Saludable" value="panaderia saludable" />
-                <Picker.Item label="Snacks Saludables" value="snacks saludables" />
-            </Picker>
+    {/* Picker para la Categoría */}
+    <Picker
+        selectedValue={categoria}
+        style={styles.input}
+        onValueChange={(itemValue) => setCategoria(itemValue)}
+    >
+        <Picker.Item label="Keto" value="keto" />
+        <Picker.Item label="Sin Gluten" value="sin gluten" />
+        <Picker.Item label="Granel" value="granel" />
+        <Picker.Item label="Bebidas" value="bebidas" />
+        <Picker.Item label="Vegano" value="vegano" />
+        <Picker.Item label="Aceites" value="aceites" />
+        <Picker.Item label="Café" value="cafe" />
+        <Picker.Item label="Infusiones y Té" value="infusiones y té" />
+        <Picker.Item label="Carnes Veganas" value="carnes veganas" />
+        <Picker.Item label="Tortillas" value="tortillas" />
+        <Picker.Item label="Chocolates" value="chocolates" />
+        <Picker.Item label="Endulzantes" value="endulzantes" />
+        <Picker.Item label="Frutos Secos y Deshidratados" value="frutos secos y deshidratados" />
+        <Picker.Item label="Pastas y Noodles Sin Gluten" value="pastas y noodles sin gluten" />
+        <Picker.Item label="Salsas y Conservas" value="salsa y conservas" />
+        <Picker.Item label="Panadería Saludable" value="panaderia saludable" />
+        <Picker.Item label="Snacks Saludables" value="snacks saludables" />
+    </Picker>
 
-            {/* Picker para la Selección */}
-            <Picker
-                selectedValue={seleccion}
-                style={styles.input}
-                onValueChange={(itemValue) => setSeleccion(itemValue)}
-            >
-                <Picker.Item label="Tienda" value="tienda" />
-                <Picker.Item label="Web" value="web" />
-            </Picker>
+    {/* Picker para la Selección */}
+    <Picker
+        selectedValue={seleccion}
+        style={styles.input}
+        onValueChange={(itemValue) => setSeleccion(itemValue)}
+    >
+        <Picker.Item label="Tienda" value="tienda" />
+        <Picker.Item label="Web" value="web" />
+    </Picker>
 
-            <Button title="Crear Producto" onPress={handleCreateProduct} />
+    <Button title="Crear Producto" onPress={handleCreateProduct} />
 
-            {loading && <Text>Cargando...</Text>}
+
+
+
+
+
+
+
         </View>
     );
 }

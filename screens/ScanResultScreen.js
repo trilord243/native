@@ -87,7 +87,21 @@ export default function ScanResultScreen() {
       setCategoria("N/A");
       setSeleccion("");
     } catch (error) {
-      console.error("Error actualizando producto:", error);
+      console.log("Error")
+      if (error.response) {
+        console.log("Error")
+        // El servidor respondió con un código de estado diferente de 2xx
+        console.log("Error Data:", error.response.data);
+        console.log("Error Status:", error.response.status);
+        console.log("Error Headers:", error.response.headers);
+      } else if (error.request) {
+        // La solicitud se hizo pero no hubo respuesta
+        console.log("Error Request:", error.request);
+      } else {
+        // Algo sucedió en la configuración de la solicitud que desencadenó un error
+        console.log("Error Message:", error.message);
+      }
+      console.log("Error Config:", error.config);
     } finally {
       setLoading(false); // Ocultar el loader
     }
@@ -97,7 +111,12 @@ export default function ScanResultScreen() {
       <View style={styles.container}>
         {/* Mostrar el loader mientras loading es true */}
         {loading ? (
-            <ActivityIndicator size="large" color="#0000ff" /> // Loader visible mientras carga
+                <View>
+                  <ActivityIndicator size="large" color="#0000ff" />
+                  <Text>Cargando datos </Text>
+
+                </View>
+
         ) : (
             <>
               <Text style={styles.text}>{scannedData}</Text>
