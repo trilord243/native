@@ -27,8 +27,57 @@ export default function ScanResultScreen() {
   const [seleccion, setSeleccion] = useState("");
   const [errorText, setErrorText] = useState("");
   const [error, setError] = useState(null);
+  const [nutricionales,setDatosnutricionales]=useState(null);
 
   const navigation = useNavigation(); // Hook para navegación
+
+
+
+
+
+  const handleCodigo = async ({ type, data }) => {
+    console.log(data + " " + "Hola");
+    setCameraActive(false);
+
+
+
+    try {
+      const response = await axios.post(http + "/consult-basededatos", {
+        codigo: data,
+        fileName: "data.xlsx",
+      });
+      console.log(response.data);
+      setErrorText("");
+
+      if (response.data.datosNutricionales) {
+        setDatosnutricionales(response.data);
+
+      } else {
+        console.log("No hay")
+
+      }
+    } catch (error) {
+
+      console.log(error);
+    } finally {
+
+    }
+  };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   const handleBarCodeScanned = async ({ type, data }) => {
     console.log(data);
@@ -47,6 +96,7 @@ export default function ScanResultScreen() {
       setProductInfo(response.data.item);
       setCategoria(response.data.item.Categoria || "N/A");
       setSeleccion(response.data.item.Seleccion || "");
+      await handleCodigo({type, data});
     } catch (error) {
       setErrorText("Código no encontrado 😿");
       console.log(error);
@@ -54,6 +104,24 @@ export default function ScanResultScreen() {
       setLoading(false); // Ocultar el loader
     }
   };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   const handleUpdateProduct = async () => {
     if (!productInfo) return;
@@ -126,13 +194,14 @@ export default function ScanResultScreen() {
                     <Button
                         title="Crear Producto"
                         onPress={() => navigation.navigate("CreateProductScreen", { codigo: scannedData })}
+
                     />
                   </View>
               )}
 
               {cameraActive && (
                   <CameraView
-                      onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+                      onBarcodeScanned={scanned ? undefined : handleBarCodeScanned || handleCodigo}
                       barcodeScannerSettings={{
                         barcodeTypes: ["qr", "pdf417", "ean13", "code39"],
                       }}
@@ -146,6 +215,7 @@ export default function ScanResultScreen() {
                         setScanned(false);
                         setCameraActive(true);
                       }}
+                      style={styles.button}
                   />
               )}
 
@@ -204,7 +274,10 @@ export default function ScanResultScreen() {
                     <Button
                         title="Actualizar producto"
                         onPress={handleUpdateProduct}
+
                     />
+
+                    {nutricionales && <Button   title="Imprimir"  />}
                   </View>
               )}
             </>
@@ -229,5 +302,8 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 10,
     width: "80%",
+  },
+  button: {
+    marginVertical: 10,
   },
 });

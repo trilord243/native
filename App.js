@@ -6,7 +6,8 @@ import { TokenProvider } from "./context/TokenProvider";
 import HomeScreen from "./screens/HomeScreen";
 import ScanResultScreen from "./screens/ScanResultScreen";
 
-import CreateProductScreen from "./screens/CreateProductScreen"; // Importa la nueva pantalla
+import CreateProductScreen from "./screens/CreateProductScreen";
+import Imprimir from "./screens/Imprimir"; // Importa la nueva pantalla
 
 const Stack = createNativeStackNavigator();
 
@@ -23,6 +24,7 @@ export default function App() {
                 options={{ title: "Crear Producto" }}
             />
           <Stack.Screen name="Scan" component={ScanResultScreen} />
+          <Stack.Screen name="Imprimir" component={Imprimir} />
         </Stack.Navigator>
       </NavigationContainer>
     </TokenProvider>
